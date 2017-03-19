@@ -36,7 +36,7 @@ public class App extends Application {
 			// load() returns an Object, cast to the right top-level component
 			this.base = (BorderPane) loader.load();
 		} catch (Exception e) {
-			System.err.println("Base failed to load from FXML File.");
+			System.err.println("Base failed to load from FXML File.\n");
 			e.printStackTrace();
 		}
 		Scene scene = new Scene(base);
