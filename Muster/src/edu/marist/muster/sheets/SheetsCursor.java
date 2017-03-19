@@ -1,4 +1,4 @@
-package edu.marist.muster;
+package edu.marist.muster.sheets;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,10 +13,18 @@ import com.google.api.services.sheets.v4.model.ValueRange;
  * @author Tom Magnusson
  *
  * @param <T>
+ * 		The expected value of the cells (usually String is applicable).
  */
 public class SheetsCursor<T> {
 
+	/**
+	 * Access to Google Sheets API
+	 */
 	private Sheets service;
+	
+	/**
+	 * The spreadsheet's id, found in the url of the sheet.
+	 */
 	private String spreadsheetId;
 	
 	public SheetsCursor(Sheets service, String spreadsheetId) {
@@ -27,7 +35,7 @@ public class SheetsCursor<T> {
 	/**
 	 * Retrieves a value from a given cell.
 	 * @param cell
-	 * @return the value from cell, null if failed in some way.
+	 * @return the value from cell, {@code null} if failed in some way.
 	 */
 	@SuppressWarnings("unchecked")
 	public T cellValue(String cell) {

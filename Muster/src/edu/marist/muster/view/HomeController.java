@@ -6,8 +6,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import edu.marist.muster.Preferences;
-import edu.marist.muster.SheetsHelper;
-import edu.marist.muster.SheetsHelperService;
+import edu.marist.muster.sheets.SheetsHelper;
+import edu.marist.muster.sheets.SheetsHelperService;
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;

@@ -1,4 +1,4 @@
-package edu.marist.muster;
+package edu.marist.muster.sheets;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.SheetProperties;
+
+import edu.marist.muster.Preferences;
 
 /**
  * Static wrapper for all the sheets HTTP calls, hiding the request logic (boy
@@ -97,7 +99,7 @@ public class SheetsHelper {
 	 * Marks an email here at the current time on the current date
 	 * in the google sheet. This call is synchronous.
 	 * @param email
-	 * @return
+	 * @return {@code true} if the email successfully updated, {@code false} otherwise.
 	 * @throws IOException
 	 */
 	public boolean mark(String email) throws IOException {
@@ -136,6 +138,14 @@ public class SheetsHelper {
 		return indexToLetter(dateColIndex + 1);
 	}
 
+	/**
+	 * Finds the row for the given email in the google sheet.
+	 * <p>This corresponds to the sheet row number (e.g. "A<strong>3</strong>"), <strong>not</strong>
+	 * the index within the list of emails.
+	 * @param email
+	 * @return the row number of the given email in column "A".
+	 * @throws IOException
+	 */
 	private int findRowForEmail(String email) throws IOException {
 		int index = getAllEmails().indexOf(email);
 
