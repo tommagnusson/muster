@@ -7,6 +7,13 @@ import java.util.List;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
+/**
+ * Quick access to single values in a Google Sheet.
+ * All methods are synchronous and go over the network.
+ * @author Tom Magnusson
+ *
+ * @param <T>
+ */
 public class SheetsCursor<T> {
 
 	private Sheets service;
@@ -17,6 +24,11 @@ public class SheetsCursor<T> {
 		this.spreadsheetId = spreadsheetId;
 	}
 	
+	/**
+	 * Retrieves a value from a given cell.
+	 * @param cell
+	 * @return the value from cell, null if failed in some way.
+	 */
 	@SuppressWarnings("unchecked")
 	public T cellValue(String cell) {
 		List<List<Object>> values;
@@ -32,6 +44,12 @@ public class SheetsCursor<T> {
 		return null;
 	}
 	
+	/**
+	 * Sets a cell with the given values
+	 * @param cell
+	 * @param value
+	 * @return {@code true} if successful, {@code false} if failed
+	 */
 	public boolean setCellValue(String cell, T value) {
 		try {
 			service.spreadsheets().values().update(spreadsheetId, cell, packValue(value))
@@ -48,7 +66,7 @@ public class SheetsCursor<T> {
 	 * @param value
 	 * @return ValueRange containing the single value.
 	 */
-	private ValueRange packValue(T value) {
+	public ValueRange packValue(T value) {
 		List<List<Object>> outer = new ArrayList<List<Object>>(1);
 		List<Object> inner = new ArrayList<Object>(1);
 		
