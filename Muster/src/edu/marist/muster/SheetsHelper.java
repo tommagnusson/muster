@@ -15,23 +15,18 @@ import com.google.api.services.sheets.v4.model.ValueRange;
 
 /**
  * Static wrapper for all the sheets HTTP calls, hiding the request logic (boy
- * is there a lot of that).
+ * is there a lot of that).<br>
  * 
- * TODO: cache network request response answers like todayColumnExists TODO:
- * have a stack with the current email request in it TODO: check which network
- * calls are being called more than once within mark TODO: organize and clean up
- * methods
+ * The only interesting (or public) method is {@code mark()}, which marks
+ * a given email here, configuring the sheet as necessary.
+ * 
+ * TODO: implement guava cache
+ * TODO: refactor methods (condense, rename)
  * 
  * @author Tom Magnusson
  *
  */
 public class SheetsHelper {
-
-	// 3/17/17
-	final public static String DATE_FORMAT = "M/d/uu";
-
-	// 9:30:00 PM
-	final public static String TIME_FORMAT = "hh:mm:ss a";
 
 	/**
 	 * Use {@code toString()} to get the string representation.
@@ -45,17 +40,39 @@ public class SheetsHelper {
 		ROWS, COLUMNS;
 	}
 
+	/**
+	 * Use {@code toString()} to get the string representation.
+	 * 
+	 * Represents the two types of value inputs for Google Sheets.
+	 * 
+	 *  <li>{@code RAW} puts the values verbatim into the cell.
+	 *  <li>{@code USER_ENTERED} puts the values into a cell, then
+	 *  	sheets might format it (like if it's a date or time).
+	 * 
+	 * @author Tom Magnusson
+	 *
+	 */
 	private enum ValueInputOption {
 		RAW, USER_ENTERED;
 	}
 
+	/**
+	 * The way this class communicates over the network with sheets.
+	 * All of its methods are synchronous.
+	 */
 	private Sheets service;
+	
+	/**
+	 * Holds the spreadsheet's id, found in the url like:
+	 * 	<li><strong>{@code 1wLqJrMyMIcwigWzaWiVj64xTcZBKfZ6}</strong> from 
+	 * 	<li>https://docs.google.com/spreadsheets/d/<strong>1wLqJrMyMIcwigWzaWiVj64xTcZBKfZ6-VOs1qpmqHZA</strong>/edit#gid=0
+	 */
 	private String spreadsheetId;
 
-	private String sheetTitle;
-
+	/**
+	 * Has
+	 */
 	private boolean sheetIsCreated = false;
-	private List<String> emailsAlreadyHere = new ArrayList<>();
 
 	private void createSheet() throws IOException {
 		updateValueInCell("Email", "A1");
@@ -72,11 +89,14 @@ public class SheetsHelper {
 		spreadsheetId = Preferences.getTestSheetID();
 	}
 
+	/**
+	 * 
+	 * @param email
+	 * @return
+	 * @throws IOException
+	 */
 	public boolean mark(String email) throws IOException {
-
-		if (emailsAlreadyHere.contains(email)) {
-			return false;
-		}
+		email = email.toLowerCase(); // make sure the emails are consistent
 
 		System.out.println("Sheet created: " + sheetIsCreated);
 		if (!sheetIsCreated)
@@ -99,15 +119,14 @@ public class SheetsHelper {
 	private void insertTimeMarkForEmail(String email) throws IOException {
 		int emailRowNumber = findRowForEmail(email);
 		String todayColLetter = findColForDate(LocalDate.now());
-		String timeString = LocalTime.now().format(DateTimeFormatter.ofPattern(TIME_FORMAT));
+		String timeString = LocalTime.now().format(DateTimeFormatter.ofPattern(Preferences.TIME_FORMAT));
 		updateValueInCell(timeString, todayColLetter + emailRowNumber);
-		emailsAlreadyHere.add(email);
 	}
 
 	private String findColForDate(LocalDate date) throws IOException {
 		List<String> dates = getAllDates();
 		System.out.println("All dates: " + dates);
-		int dateColIndex = getAllDates().indexOf(date.format(DateTimeFormatter.ofPattern(DATE_FORMAT)));
+		int dateColIndex = getAllDates().indexOf(date.format(DateTimeFormatter.ofPattern(Preferences.DATE_FORMAT)));
 		System.out.println("Date column index: " + dateColIndex);
 		return colLetter(dateColIndex);
 	}
@@ -126,7 +145,7 @@ public class SheetsHelper {
 	 * @throws IOException
 	 */
 	private void appendTodayColumn() throws IOException {
-		String todayString = LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT));
+		String todayString = LocalDate.now().format(DateTimeFormatter.ofPattern(Preferences.DATE_FORMAT));
 		int indexOfLastCol = service.spreadsheets().values().get(spreadsheetId, "1:1").execute().getValues().get(0)
 				.size() - 1;
 		String letterOfCol = colLetter(indexOfLastCol);
@@ -152,7 +171,7 @@ public class SheetsHelper {
 
 	private boolean todayColumnExists() throws IOException {
 		String todayString = getLastHeader();
-		return LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT)).equals(todayString);
+		return LocalDate.now().format(DateTimeFormatter.ofPattern(Preferences.DATE_FORMAT)).equals(todayString);
 	}
 
 	private String getLastHeader() throws IOException {
@@ -164,13 +183,9 @@ public class SheetsHelper {
 		return (String) values.get(size - 1);
 	}
 
-	private List<List<Object>> getValuesFromRangeByColumn(String range) throws IOException {
-		return service.spreadsheets().values().get(spreadsheetId, range).setMajorDimension(Dimension.COLUMNS.toString())
-				.execute().getValues();
-	}
-
-	private List<List<Object>> getValuesFromRangeByRow(String range) throws IOException {
-		return service.spreadsheets().values().get(spreadsheetId, range).setMajorDimension(Dimension.ROWS.toString())
+	
+	private List<List<Object>> getValuesFromRangeByDimension(String range, Dimension dimension) throws IOException {
+		return service.spreadsheets().values().get(spreadsheetId, range).setMajorDimension(dimension.toString())
 				.execute().getValues();
 	}
 
@@ -206,7 +221,7 @@ public class SheetsHelper {
 	}
 
 	private List<String> getAllEmails() throws IOException {
-		List<List<Object>> valueValue = getValuesFromRangeByColumn("A2:A1000");
+		List<List<Object>> valueValue = getValuesFromRangeByDimension("A2:A1000", Dimension.COLUMNS);
 		List<Object> values = valueValue != null ? valueValue.get(0) : new ArrayList<Object>(0);
 		List<String> emails = values.stream().map(o -> o.toString()).collect(Collectors.toList());
 		System.out.println("Just finished getting emails: " + emails);
@@ -215,7 +230,7 @@ public class SheetsHelper {
 
 	private List<String> getAllDates() throws IOException {
 		// skip "A" because we know it's "Emails"
-		List<Object> values = getValuesFromRangeByRow("B1:Z1").get(0);
+		List<Object> values = getValuesFromRangeByDimension("B1:Z1", Dimension.ROWS).get(0);
 		List<String> dates = values.stream().map(o -> o.toString()).collect(Collectors.toList());
 		return dates;
 	}
@@ -228,34 +243,5 @@ public class SheetsHelper {
 
 	private SheetProperties getSheetProperties() throws IOException {
 		return service.spreadsheets().get(spreadsheetId).execute().getSheets().get(0).getProperties();
-	}
-
-	/**
-	 * Grabs the sheetTitle cached in memory, or if that's null, make the http
-	 * request to get the title.
-	 * 
-	 * @return title of the sheet, usually "Sheet1"
-	 * @throws IOException
-	 */
-	public String getSheetTitle() throws IOException {
-		if (sheetTitle != null)
-			return sheetTitle;
-
-		return forceGetSheetTitle();
-	}
-
-	/**
-	 * Forces the class to go over the network to get the sheet title. Caches
-	 * the title to the {@code sheetTitle} instance variable.
-	 * 
-	 * Try to use {@code getSheetTitle()} instead, unless you think the sheet
-	 * was updated.
-	 * 
-	 * @return title of the sheet, usually "Sheet1"
-	 * @throws IOException
-	 */
-	public String forceGetSheetTitle() throws IOException {
-		sheetTitle = getSheetProperties().getTitle();
-		return sheetTitle;
 	}
 }

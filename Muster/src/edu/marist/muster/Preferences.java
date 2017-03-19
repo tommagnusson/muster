@@ -14,6 +14,12 @@ import javafx.util.Duration;
  */
 public class Preferences {
 
+	// 3/17/17
+	final public static String DATE_FORMAT = "M/d/uu";
+
+	// 9:30:00 PM
+	final public static String TIME_FORMAT = "hh:mm:ss a";
+	
 	/// Not meant to be instantiated
 	private Preferences() {}
 	
