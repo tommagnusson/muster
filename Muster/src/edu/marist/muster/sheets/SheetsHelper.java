@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.google.api.services.sheets.v4.Sheets;
@@ -26,7 +27,7 @@ import edu.marist.muster.Preferences;
  * @author Tom Magnusson
  *
  */
-public class SheetsHelper {
+public final class SheetsHelper {
 
 	/**
 	 * Use {@code toString()} to get the string representation.
@@ -75,11 +76,8 @@ public class SheetsHelper {
 	 */
 	private String spreadsheetId;
 
-	private boolean sheetIsCreated = false;
-
 	private void createSheet() throws IOException {
 		cursor.setCellValue("A1", "Email");
-		sheetIsCreated = true;
 	}
 
 	public SheetsHelper() throws Exception {
@@ -105,8 +103,7 @@ public class SheetsHelper {
 	public boolean mark(String email) throws IOException {
 		email = email.toLowerCase(); // make sure the emails are consistent
 
-		System.out.println("Sheet created: " + sheetIsCreated);
-		if (!sheetIsCreated)
+		if (!emailHeaderIsPresent())
 			createSheet();
 
 		boolean emailExists = emailRowExists(email);
@@ -245,6 +242,14 @@ public class SheetsHelper {
 		List<Object> values = getValuesFromRangeByDimension("B1:Z1", Dimension.ROWS).get(0);
 		List<String> dates = values.stream().map(o -> o.toString()).collect(Collectors.toList());
 		return dates;
+	}
+	
+	private boolean emailHeaderIsPresent() {
+		Optional<String> header = cursor.cellValue("A1");
+		if(header.isPresent()) {
+			 return header.get().equals("Email");
+		}
+		return false;
 	}
 	
 	private SheetProperties getSheetProperties() throws IOException {

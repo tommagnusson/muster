@@ -8,7 +8,7 @@ import com.google.common.cache.LoadingCache;
 
 import edu.marist.muster.sheets.SheetsHelper;
 
-public class SheetsHelperService extends Service<String>{
+public final class SheetsHelperService extends Service<String>{
 
 	private SheetsHelper helper;
 	private String email;

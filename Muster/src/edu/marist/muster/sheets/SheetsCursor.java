@@ -3,6 +3,7 @@ package edu.marist.muster.sheets;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.ValueRange;
@@ -15,7 +16,7 @@ import com.google.api.services.sheets.v4.model.ValueRange;
  * @param <T>
  * 		The expected value of the cells (usually String is applicable).
  */
-public class SheetsCursor<T> {
+public final class SheetsCursor<T> {
 
 	/**
 	 * Access to Google Sheets API
@@ -35,21 +36,22 @@ public class SheetsCursor<T> {
 	/**
 	 * Retrieves a value from a given cell.
 	 * @param cell
-	 * @return the value from cell, {@code null} if failed in some way.
+	 * @return Optional value of type T
+	 * 		if the call failed in some way, the value will be empty
 	 */
 	@SuppressWarnings("unchecked")
-	public T cellValue(String cell) {
+	public Optional<T> cellValue(String cell) {
 		List<List<Object>> values;
 		try {
-			values = service.spreadsheets().values().get(cell, cell).execute().getValues();
+			values = service.spreadsheets().values().get(spreadsheetId, cell).execute().getValues();
 			if(values != null && values.get(0) != null && values.get(0).get(0) != null) {
-				return (T) values.get(0).get(0);
+				return Optional.of((T) values.get(0).get(0));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			return null;
+			return Optional.empty();
 		}
-		return null;
+		return Optional.empty();
 	}
 	
 	/**
