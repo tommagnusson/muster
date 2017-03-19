@@ -141,4 +141,7 @@ public final class SheetsCursor<T> {
 		return new ValueRange().setValues(outer);
 	}
 	
+	public void setSpreadsheetId(String id) {
+		this.spreadsheetId = id;
+	}
 }

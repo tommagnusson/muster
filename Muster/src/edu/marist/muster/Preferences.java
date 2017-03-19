@@ -20,13 +20,20 @@ public class Preferences {
 	// 9:30:00 PM
 	final public static String TIME_FORMAT = "hh:mm:ss a";
 	
+	private static String sheetID;
+	
 	/// Not meant to be instantiated
 	private Preferences() {}
 	
 	// Prints the names and majors of students in a sample spreadsheet:
 	// https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
+	// 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms
 	public static String getSheetID() {
-		return "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms";
+		return sheetID;
+	}
+	
+	public static void setSheetID(String sheetID) {
+		Preferences.sheetID = sheetID;
 	}
 	
 	// Test sheet entitled "RHC Test"

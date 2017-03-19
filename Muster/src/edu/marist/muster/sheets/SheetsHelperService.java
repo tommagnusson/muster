@@ -6,6 +6,7 @@ import javafx.concurrent.Task;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
 
+import edu.marist.muster.Preferences;
 import edu.marist.muster.sheets.SheetsHelper;
 
 public final class SheetsHelperService extends Service<String>{
@@ -37,6 +38,8 @@ public final class SheetsHelperService extends Service<String>{
 
 			@Override
 			protected String call() throws Exception {
+				System.out.println("Call is being called in the service");
+				helper.setSpreadSheetId(Preferences.getSheetID());
 				helper.mark(email);
 				return email;
 			}

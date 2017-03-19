@@ -94,10 +94,16 @@ public final class SheetsHelper {
 		}
 
 		// grab the ID of the sheet, within the url
-		spreadsheetId = Preferences.getTestSheetID();
+		spreadsheetId = Preferences.getSheetID();
 		
 		// convenience class for reading and writing single values
 		cursor = new SheetsCursor<>(service, spreadsheetId, (o) -> (String) o);
+	}
+	
+	// TODO: fix this id mess
+	public void setSpreadSheetId(String id) {
+		this.spreadsheetId = id;
+		this.cursor.setSpreadsheetId(id);
 	}
 
 	/**
@@ -107,24 +113,29 @@ public final class SheetsHelper {
 	 * @return {@code true} if the email successfully updated, {@code false} otherwise.
 	 * @throws IOException
 	 */
-	public boolean mark(String email) throws IOException {
+	public boolean mark(String email) {
 		email = email.toLowerCase(); // make sure the emails are consistent
+		try {
+			System.out.println(email);
+			if (!emailHeaderIsPresent())
+				createSheet();
 
-		if (!emailHeaderIsPresent())
-			createSheet();
+			boolean emailExists = emailRowExists(email);
+			System.out.println("Email row exists: " + emailExists);
+			if (!emailExists)
+				appendEmailRow(email);
 
-		boolean emailExists = emailRowExists(email);
-		System.out.println("Email row exists: " + emailExists);
-		if (!emailExists)
-			appendEmailRow(email);
+			boolean todayExists = todayColumnExists();
+			System.out.println("Today column exists: " + todayExists);
+			if (!todayExists)
+				appendTodayColumn();
 
-		boolean todayExists = todayColumnExists();
-		System.out.println("Today column exists: " + todayExists);
-		if (!todayExists)
-			appendTodayColumn();
-
-		insertTimeMarkForEmail(email);
-		return true;
+			insertTimeMarkForEmail(email);
+			return true;
+		} catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	private void insertTimeMarkForEmail(String email) throws IOException {

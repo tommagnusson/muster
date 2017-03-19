@@ -1,15 +1,17 @@
 package edu.marist.muster.view;
 
-import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import edu.marist.muster.App;
 import edu.marist.muster.Preferences;
 import edu.marist.muster.sheets.SheetsHelper;
 import edu.marist.muster.sheets.SheetsHelperService;
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -17,6 +19,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
 /**
  * To "hook this up" to the fxml representation (BaseView.fxml) you need to look
@@ -89,6 +93,11 @@ public class HomeController {
 			// TODO: include warning that sheets is not cooperating
 		}
 		
+		if(Preferences.getSheetID() == null) {
+			// present the user with the settings to provide the url
+			onSetttingsClicked(null);
+		}
+		
 		// the service operates in callbacks, async style
 		service.setOnSucceeded((workerStateEvent) -> {
 			// the result of the Task.call() method
@@ -157,6 +166,7 @@ public class HomeController {
 	 * @param m
 	 */
 	private void imHere(MouseEvent m) {
+		
 		String email = emailTextField.getText();
 		switch (validateEmail(email)) {
 		case VALID:
@@ -230,7 +240,22 @@ public class HomeController {
 	}
 	
 	private void onSetttingsClicked(MouseEvent m) {
-		System.out.println("Transitioning to settings view.");
+		// TODO: set popup
+		Stage popup = new Stage();
+		
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(getClass().getResource("SettingsView.fxml"));
+		try {
+			AnchorPane pane = (AnchorPane) loader.load();
+			System.out.println("Transitioning to settings view.");
+			Scene s = new Scene(pane);
+			popup.setScene(s);
+			popup.show();
+			popup.toFront();
+		} catch(Exception e) {
+			e.printStackTrace();
+			return;
+		}
 	}
 
 	/**

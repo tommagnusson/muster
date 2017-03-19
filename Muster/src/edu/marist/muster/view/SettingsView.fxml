@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="100.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.marist.muster.view.SettingsController">
+   <children>
+      <Label layoutX="12.0" layoutY="6.0" prefHeight="17.0" prefWidth="176.0" text="Settings">
+         <font>
+            <Font name="Times New Roman" size="16.0" />
+         </font>
+      </Label>
+      <Label layoutX="14.0" layoutY="42.0" text="Google Sheets URL">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
+      <TextField fx:id="googleSheetUrlTextfield" layoutX="14.0" layoutY="59.0" prefHeight="25.0" prefWidth="176.0" />
+   </children>
+</AnchorPane>
