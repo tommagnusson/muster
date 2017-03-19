@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane prefHeight="200.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.marist.muster.view.HomeController">
+   <center>
+      <AnchorPane prefWidth="400.0" BorderPane.alignment="CENTER">
+         <children>
+            <TextField fx:id="emailTextField" alignment="CENTER_RIGHT" layoutX="15.0" layoutY="69.0" prefHeight="25.0" prefWidth="302.0" promptText="First.Last#" AnchorPane.leftAnchor="10.0" />
+            <Label layoutX="304.0" layoutY="69.0" prefHeight="25.0" prefWidth="81.0" style="-fx-border-color: gray;" styleClass="root" text="\@marist.edu" AnchorPane.rightAnchor="10.0">
+               <padding>
+                  <Insets left="5.0" />
+               </padding>
+            </Label>
+            <Button fx:id="imHereButton" layoutX="10.0" layoutY="165.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="370.0" text="I'm Here!" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" />
+            <Label layoutX="14.0" layoutY="14.0" text="Muster" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
+               <font>
+                  <Font name="Times New Roman Bold" size="32.0" />
+               </font>
+            </Label>
+            <Label fx:id="imHereConfirmationLabel" alignment="TOP_LEFT" layoutX="10.0" layoutY="112.0" prefHeight="68.0" prefWidth="380.0" text="email was here at time and date and added to sheet" textFill="#08790a7a" wrapText="true" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="10.0">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font></Label>
+            <Button fx:id="settingsButton" layoutX="331.0" layoutY="16.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="81.0" text="Settings" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="16.0" />
+            <Label layoutX="110.0" layoutY="10.0" prefHeight="37.0" prefWidth="93.0" text="Marist" textFill="#981b1a">
+               <font>
+                  <Font name="Times New Roman" size="32.0" />
+               </font>
+            </Label>
+            <ProgressBar fx:id="progressBar" layoutX="9.0" layoutY="45.0" prefHeight="20.0" prefWidth="381.0" progress="0.0" />
+         </children>
+      </AnchorPane>
+   </center>
+</BorderPane>
