@@ -23,6 +23,7 @@ import edu.marist.muster.Preferences;
  * 
  * TODO: implement guava cache
  * TODO: refactor methods (condense, rename)
+ * TODO: add SheetsVector class for dealing with rows and columns (then add cache to that)
  * 
  * @author Tom Magnusson
  *
@@ -80,17 +81,23 @@ public final class SheetsHelper {
 		cursor.setCellValue("A1", "Email");
 	}
 
-	public SheetsHelper() throws Exception {
+	public SheetsHelper() {
 		// Build a new authorized API client service.
 		// grab the http services helper from the API Boilerplate setup
 		// class
-		service = GoogleAPIHelper.getSheetsService();
+		try {
+			service = GoogleAPIHelper.getSheetsService();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("Google sheets is not available.");
+			System.exit(-1);
+		}
 
 		// grab the ID of the sheet, within the url
 		spreadsheetId = Preferences.getTestSheetID();
 		
 		// convenience class for reading and writing single values
-		cursor = new SheetsCursor<>(service, spreadsheetId);
+		cursor = new SheetsCursor<>(service, spreadsheetId, (o) -> (String) o);
 	}
 
 	/**

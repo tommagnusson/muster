@@ -164,7 +164,7 @@ public class HomeController {
 			service.setEmail(email);
 			service.restart();
 			progressBar.setOpacity(1.0);
-			progressBar.setProgress(0.33);
+			progressBar.setProgress(0.85);
 			break;
 		case BAD_EMAIL_FORMATTING:
 			imHereFailure("Something's wrong, looks like \"" + email + "\" isn't formatted correctly.");
